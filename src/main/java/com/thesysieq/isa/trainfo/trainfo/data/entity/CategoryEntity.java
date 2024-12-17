@@ -1,22 +1,22 @@
 package com.thesysieq.isa.trainfo.trainfo.data.entity;
 
-
 import com.thesysieq.isa.trainfo.trainfo.domain.model.CategoryType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.transaction.annotation.Transactional;
 
-
-import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
+@Transactional
 @Entity
 @Table(name="categories")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CategoryEntity implements Comparable<CategoryEntity>, Serializable {
+public class CategoryEntity{
+
     @Id
     @Column(name = "category_id", nullable=false, unique=true, updatable=false)
     private UUID categoryId;
@@ -39,12 +39,5 @@ public class CategoryEntity implements Comparable<CategoryEntity>, Serializable 
     @EqualsAndHashCode.Exclude
     private List<TrainEntity> trains;
 
-    @Override
-    public int compareTo(CategoryEntity o) {
-        int result = this.categoryId.compareTo(o.categoryId);
-        if(result == 0){
-            result = this.hashCode() - o.hashCode();
-        }
-        return result;
-    }
+
 }

@@ -1,14 +1,13 @@
 package com.thesysieq.isa.trainfo.trainfo.data.entity;
 
-import java.io.Serializable;
-
-import com.thesysieq.isa.trainfo.trainfo.remote.rest.dto.StopDto;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.sql.Time;
 import java.util.UUID;
 
+@Transactional
 @Entity
 @Table(name="stops")
 @AllArgsConstructor
@@ -16,7 +15,7 @@ import java.util.UUID;
 @Builder
 @Data
 
-public class StopEntity implements Comparable<StopEntity>, Serializable {
+public class StopEntity {
 
     @Id
     @Column(name = "stop_id", nullable=false, unique=true, updatable=false)
@@ -39,25 +38,4 @@ public class StopEntity implements Comparable<StopEntity>, Serializable {
 
     @Column(name = "distance_from_origin_km", nullable = false)
     private Float distanceFromOriginKm;
-
-    @Override
-    public int compareTo(StopEntity o) {
-        int result = train.getTrainNumber().compareTo(o.getTrain().getTrainNumber());
-        if(result == 0){
-            result = distanceFromOriginKm.compareTo(o.getDistanceFromOriginKm());
-        }
-        else result = this.hashCode() - o.hashCode();
-        return result;
-    }
-
-    public StopDto transferToDto() {
-        return StopDto.builder()
-                .trainNumber(this.train.getTrainNumber())
-                .station(this.station)
-                .arrival(this.arrival.toString())
-                .departure(this.departure.toString())
-                .distanceFromOriginKm(this.distanceFromOriginKm)
-                .build();
-
-    }
 }
