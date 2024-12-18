@@ -47,8 +47,8 @@ public class TrainController {
         return new ResponseEntity<>(category.getTrains().stream().map(TrainResponseDto::transferToDto).toList(), HttpStatus.OK);
     }
 
-    @PostMapping("/categories/{uuid}/trains/")
-    public ResponseEntity<TrainResponseDto> createTrain(@PathVariable UUID uuid, @RequestBody TrainRequestDto trainRequestDto) {
+    @PostMapping("/categories/{uuid}/trains/{trainId}")
+    public ResponseEntity<TrainResponseDto> createTrain(@PathVariable UUID uuid, @PathVariable UUID trainId, @RequestBody TrainRequestDto trainRequestDto) {
         var category = categoryService.findById(uuid);
 
         if (category == null) {
@@ -56,6 +56,7 @@ public class TrainController {
         }
 
         var trainToPost = TrainEntity.builder()
+                .trainId(trainId)
                 .trainNumber(trainRequestDto.getTrainNumber())
                 .category(category)
                 .build();

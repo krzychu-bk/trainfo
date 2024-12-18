@@ -16,6 +16,12 @@ import java.util.UUID;
 public class CategoryController {
 
     private CategoryService categoryService;
+
+    @Autowired
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
+
     @GetMapping("/categories/")
     public ResponseEntity<List<CategoryResponseDto>> getAllCategories() {
         return new ResponseEntity<>(categoryService.findAll().stream()
@@ -32,9 +38,10 @@ public class CategoryController {
         return new ResponseEntity<>(CategoryResponseDto.transferToDto(category), HttpStatus.OK);
     }
 
-    @PostMapping("/categories/")
-    public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
+    @PostMapping("/categories/{uuid}/")
+    public ResponseEntity<CategoryResponseDto> createCategory(@PathVariable UUID uuid, @RequestBody CategoryRequestDto categoryRequestDto) {
         var category = CategoryEntity.builder()
+                .categoryId(uuid)
                 .categoryType(categoryRequestDto.getCategoryType())
                 .businessName(categoryRequestDto.getBusinessName())
                 .operatorName(categoryRequestDto.getOperatorName())
