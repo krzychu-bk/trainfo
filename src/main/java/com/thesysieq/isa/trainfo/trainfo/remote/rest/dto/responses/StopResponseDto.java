@@ -1,7 +1,6 @@
 package com.thesysieq.isa.trainfo.trainfo.remote.rest.dto.responses;
 
 import com.thesysieq.isa.trainfo.trainfo.data.entity.StopEntity;
-import lombok.Builder;
 import lombok.Value;
 
 import java.sql.Time;

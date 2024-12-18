@@ -38,41 +38,38 @@ public class TrainController {
         return new ResponseEntity<>(TrainResponseDto.transferToDto(train), HttpStatus.OK);
     }
 
-    @GetMapping("/categories/{uuid}/trains/")
-    public ResponseEntity<List<TrainResponseDto>> getCategories(@PathVariable UUID uuid) {
-        var category = categoryService.findById(uuid);
+    @GetMapping("/categories/{category_id}/trains/")
+    public ResponseEntity<List<TrainResponseDto>> getTrainsByCategory(@PathVariable UUID category_id) {
+        var category = categoryService.findById(category_id);
         if (category == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(category.getTrains().stream().map(TrainResponseDto::transferToDto).toList(), HttpStatus.OK);
     }
 
-    @PostMapping("/categories/{uuid}/trains/{trainId}")
-    public ResponseEntity<TrainResponseDto> createTrain(@PathVariable UUID uuid, @PathVariable UUID trainId, @RequestBody TrainRequestDto trainRequestDto) {
-        var category = categoryService.findById(uuid);
-
-        if (category == null) {
+    @PutMapping("/categories/{category_id}/trains/{train_id}")
+    public ResponseEntity<TrainResponseDto> updateTrain(@PathVariable UUID category_id, @PathVariable UUID train_id , @RequestBody TrainRequestDto trainRequestDto) {
+        var train = trainService.findById(train_id);
+        var category = categoryService.findById(category_id);
+        var status = HttpStatus.OK;
+        if (train == null && category != null) {
+            train = TrainEntity.builder()
+                    .trainId(train_id)
+                    .trainNumber(trainRequestDto.getTrainNumber())
+                    .category(category)
+                    .build();
+            status = HttpStatus.CREATED;
+            category.getTrains().add(train);
+            categoryService.save(category);
+        }
+        else if (category == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        var trainToPost = TrainEntity.builder()
-                .trainId(trainId)
-                .trainNumber(trainRequestDto.getTrainNumber())
-                .category(category)
-                .build();
-        trainService.save(trainToPost);
-        return new ResponseEntity<>(TrainResponseDto.transferToDto(trainToPost), HttpStatus.CREATED);
-    }
-
-    @PutMapping("/genres/{uuid}/games")
-    public ResponseEntity<TrainResponseDto> updateTrain(@PathVariable UUID uuid, @RequestBody TrainRequestDto trainRequestDto) {
-        var train = trainService.findById(uuid);
-        if (train == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        else{
+            train.setTrainNumber(trainRequestDto.getTrainNumber());
         }
-        train.setTrainNumber(trainRequestDto.getTrainNumber());
         trainService.save(train);
-        return new ResponseEntity<>(TrainResponseDto.transferToDto(train), HttpStatus.OK);
+        return new ResponseEntity<>(TrainResponseDto.transferToDto(train), status);
     }
 
     @DeleteMapping("/trains/{uuid}")
@@ -82,7 +79,6 @@ public class TrainController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         trainService.delete(train);
-
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

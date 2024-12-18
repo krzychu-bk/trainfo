@@ -11,6 +11,7 @@ public class CategoryResponseDto {
     UUID categoryId;
     CategoryType categoryType;
     String businessName;
+    String operatorName;
     Float pricePerKmPLN;
 
     public static CategoryResponseDto transferToDto(CategoryEntity category) {
@@ -18,6 +19,7 @@ public class CategoryResponseDto {
                 category.getCategoryId(),
                 category.getCategoryType(),
                 category.getBusinessName(),
+                category.getOperatorName(),
                 category.getPricePerKmPLN()
         );
     }

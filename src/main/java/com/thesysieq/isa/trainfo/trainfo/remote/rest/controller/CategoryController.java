@@ -1,6 +1,7 @@
 package com.thesysieq.isa.trainfo.trainfo.remote.rest.controller;
 
 import com.thesysieq.isa.trainfo.trainfo.data.entity.CategoryEntity;
+import com.thesysieq.isa.trainfo.trainfo.data.entity.TrainEntity;
 import com.thesysieq.isa.trainfo.trainfo.remote.rest.dto.requests.CategoryRequestDto;
 import com.thesysieq.isa.trainfo.trainfo.remote.rest.dto.responses.CategoryResponseDto;
 import com.thesysieq.isa.trainfo.trainfo.remote.rest.service.CategoryService;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,33 +40,28 @@ public class CategoryController {
         return new ResponseEntity<>(CategoryResponseDto.transferToDto(category), HttpStatus.OK);
     }
 
-    @PostMapping("/categories/{uuid}/")
-    public ResponseEntity<CategoryResponseDto> createCategory(@PathVariable UUID uuid, @RequestBody CategoryRequestDto categoryRequestDto) {
-        var category = CategoryEntity.builder()
-                .categoryId(uuid)
-                .categoryType(categoryRequestDto.getCategoryType())
-                .businessName(categoryRequestDto.getBusinessName())
-                .operatorName(categoryRequestDto.getOperatorName())
-                .pricePerKmPLN(categoryRequestDto.getPricePerKmPLN())
-                .build();
-
-        categoryService.save(category);
-
-        return new ResponseEntity<>(CategoryResponseDto.transferToDto(category), HttpStatus.CREATED);
-    }
-
     @PutMapping("/categories/{uuid}/")
     public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable UUID uuid, @RequestBody CategoryRequestDto categoryRequestDto) {
         var category = categoryService.findById(uuid);
+        var status =  HttpStatus.OK;
         if(category == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            category = CategoryEntity.builder()
+                    .categoryId(uuid)
+                    .categoryType(categoryRequestDto.getCategoryType())
+                    .businessName(categoryRequestDto.getBusinessName())
+                    .operatorName(categoryRequestDto.getOperatorName())
+                    .pricePerKmPLN(categoryRequestDto.getPricePerKmPLN())
+                    .build();
+            status = HttpStatus.CREATED;
         }
-        category.setCategoryType(categoryRequestDto.getCategoryType());
-        category.setBusinessName(categoryRequestDto.getBusinessName());
-        category.setOperatorName(categoryRequestDto.getOperatorName());
-        category.setPricePerKmPLN(categoryRequestDto.getPricePerKmPLN());
+        else{
+            category.setCategoryType(categoryRequestDto.getCategoryType());
+            category.setBusinessName(categoryRequestDto.getBusinessName());
+            category.setOperatorName(categoryRequestDto.getOperatorName());
+            category.setPricePerKmPLN(categoryRequestDto.getPricePerKmPLN());
+        }
         categoryService.save(category);
-        return new ResponseEntity<>(CategoryResponseDto.transferToDto(category), HttpStatus.OK);
+        return new ResponseEntity<>(CategoryResponseDto.transferToDto(category), status);
     }
 
     @DeleteMapping("/categories/{uuid}")
