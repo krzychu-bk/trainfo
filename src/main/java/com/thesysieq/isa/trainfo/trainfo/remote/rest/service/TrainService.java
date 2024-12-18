@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TrainService {
@@ -20,7 +21,15 @@ public class TrainService {
         return trainRepository.findAll();
     }
 
+    public TrainEntity findById(UUID id) {
+        return trainRepository.findById(id).orElse(null);
+    }
+
     public TrainEntity save(TrainEntity train) {
         return trainRepository.save(train);
+    }
+
+    public void delete(TrainEntity train) {
+        trainRepository.delete(train);
     }
 }

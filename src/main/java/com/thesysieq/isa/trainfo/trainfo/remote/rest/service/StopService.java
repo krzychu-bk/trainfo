@@ -28,6 +28,7 @@ public class StopService {
     public StopEntity save(StopEntity entry) {
         return stopRepository.save(entry);
     }
+
     public void delete(StopEntity entry) {
         stopRepository.delete(entry);
     }
